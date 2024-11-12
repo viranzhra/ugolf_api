@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+namespace App\Models;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -21,6 +23,15 @@ class PaymentType extends Model
         'updated_by',
         'deleted_by',
     ];
+
+    // Tentukan primary key
+    protected $primaryKey = 'payment_type_id';
+
+    // Tentukan jika tidak ada auto increment pada primary key
+    public $incrementing = true;
+
+    // Tentukan tipe data primary key (big integer)
+    protected $keyType = 'int';
 
     // Relasi dengan model Config
     public function configs()

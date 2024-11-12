@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Cms;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+// use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class CmsController extends Controller
 {
@@ -14,17 +16,65 @@ class CmsController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Mengambil semua data CMS
-        $cms = Cms::all();
-
+        // Get pagination parameters (start and length) from the request
+        $start = $request->input('start', 0);   // Default start is 0
+        $length = $request->input('length', 10); // Default length is 10
+        $search = $request->input('search.value', ''); // Search query, if available
+    
+        // Base query for Cms with join to terminals table for terminal_code
+        $baseQuery = Cms::query()
+            ->join('terminals', 'cms.terminal_id', '=', 'terminals.terminal_id')
+            ->select(
+                'cms.terminal_id', 
+                'cms.cms_code', 
+                'cms.cms_name', 
+                'cms.cms_value', 
+                'terminals.terminal_code'
+            );
+    
+        // Apply search filter if there’s a search value
+        if ($search) {
+            $baseQuery->where(function ($q) use ($search) {
+                $q->where(DB::raw('LOWER(cms.cms_code)'), 'LIKE', "%" . strtolower($search) . "%")
+                    ->orWhere(DB::raw('LOWER(cms.cms_name)'), 'LIKE', "%" . strtolower($search) . "%")
+                    ->orWhere(DB::raw('LOWER(cms.cms_value)'), 'LIKE', "%" . strtolower($search) . "%")
+                    ->orWhere(DB::raw('LOWER(terminals.terminal_code)'), 'LIKE', "%" . strtolower($search) . "%");
+            });
+        }
+    
+        // Clone the base query to count filtered records
+        $recordsFiltered = $baseQuery->count();
+    
+        // Apply pagination to the query
+        $data = $baseQuery->offset($start)->limit($length)->get();
+    
+        // Count total records without filter for recordsTotal
+        $recordsTotal = Cms::count();
+    
+        // Return data in the desired format for DataTables
         return response()->json([
             'status' => true,
-            'message' => 'Data CMS berhasil diambil',
-            'data' => $cms
+            'message' => 'Data berhasil diambil',
+            'recordsTotal' => $recordsTotal,       // Total records in the database
+            'recordsFiltered' => $recordsFiltered, // Total records after filtering
+            'data' => $data                        // Data to be displayed on the page
         ], 200);
     }
+    
+    
+    // public function index()
+    // {
+    //     // Mengambil semua data CMS
+    //     $cms = Cms::all();
+
+    //     return response()->json([
+    //         'status' => true,
+    //         'message' => 'Data CMS berhasil diambil',
+    //         'data' => $cms
+    //     ], 200);
+    // }
 
     /**
      * Mengupdate nilai CMS berdasarkan ID.

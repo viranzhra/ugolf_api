@@ -12,7 +12,8 @@ return new class extends Migration
     public function up()
     {
         Schema::create('payment_types', function (Blueprint $table) {
-            $table->id('payment_type_id');
+            // $table->id('payment_type_id');
+            $table->bigIncrements('payment_type_id');
             $table->string('payment_type_code', 100)->unique(); // Misalnya: QRIS
             $table->string('payment_type_name', 100); // Nama pembayaran (misalnya QRIS)
             $table->text('description')->nullable(); // Deskripsi tambahan

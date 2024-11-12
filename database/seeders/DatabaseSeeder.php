@@ -23,11 +23,11 @@ class DatabaseSeeder extends Seeder
             // 'role' => 'admin', // Pastikan ada kolom 'role' di tabel users
         ]);
 
-        User::factory()->create([
-            'name' => 'User',
-            'email' => 'user@gmail.com',
-            'password' => Hash::make('user123'),
-            // 'role' => 'user', // Pastikan ada kolom 'role' di tabel users
-        ]);
+        // User::factory()->create([
+        //     'name' => 'User',
+        //     'email' => 'user@gmail.com',
+        //     'password' => Hash::make('user123'),
+        //     // 'role' => 'user', // Pastikan ada kolom 'role' di tabel users
+        // ]);
     }
 }

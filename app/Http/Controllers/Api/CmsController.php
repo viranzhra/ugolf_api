@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Cms;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 
 class CmsController extends Controller
 {
@@ -22,43 +21,9 @@ class CmsController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Data CMS tidak ditemukan',
+            'message' => 'Data CMS berhasil diambil',
             'data' => $cms
         ], 200);
-    }
-
-    public function store(Request $request)
-    {
-        // Validasi input untuk cms_name dan cms_value
-        $validator = Validator::make($request->all(), [
-            'cms_name' => 'required|string|max:100',  // Validasi untuk nama CMS
-            'cms_value' => 'required|string|max:225', // Validasi untuk value CMS
-            'terminal_id' => 'required|integer',      // Validasi untuk terminal_id
-            'cms_code' => 'required|integer',         // Validasi untuk cms_code
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $validator->errors()
-            ], 400);
-        }
-
-        // Menyimpan data CMS baru
-        $cms = new Cms();
-        $cms->cms_name = $request->input('cms_name');
-        $cms->cms_value = $request->input('cms_value');
-        $cms->terminal_id = $request->input('terminal_id');
-        $cms->cms_code = $request->input('cms_code');
-        $cms->created_by = Auth::id(); // ID user yang menambahkan
-        $cms->created_at = now(); // Waktu pembuatan
-        $cms->save();
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Data CMS berhasil ditambahkan',
-            'data' => $cms
-        ], 201);
     }
 
     /**
@@ -70,38 +35,31 @@ class CmsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Validasi input untuk cms_value
-        $validator = Validator::make($request->all(), [
-            'cms_value' => 'required|string|max:225', // Validasi untuk kolom value
+        // Validasi input
+        $request->validate([
+            'cms_value' => 'required|string|max:225', // hanya kolom value yang bisa diubah
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $validator->errors()
-            ], 400);
-        }
-
-        // Cari data CMS berdasarkan ID
+        // Cari CMS berdasarkan ID
         $cms = Cms::find($id);
 
         if (!$cms) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'CMS tidak ditemukan'
+                'message' => 'CMS tidak ditemukan',
             ], 404);
         }
 
-        // Update kolom cms_value dan informasi update lainnya
+        // Update hanya cms_value
         $cms->cms_value = $request->input('cms_value');
-        $cms->updated_by = Auth::id(); // ID user yang mengupdate
-        $cms->updated_at = now(); // Waktu update
+        $cms->updated_by = Auth::check() ? Auth::id() : 1; // Set ID user yang mengedit
+        $cms->updated_at = now();
         $cms->save();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Nilai CMS berhasil diperbarui',
-            'data' => $cms
+            'message' => 'CMS berhasil diperbarui',
+            'data' => $cms,
         ], 200);
     }
 }

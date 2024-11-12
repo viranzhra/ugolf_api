@@ -12,6 +12,9 @@ class Trx extends Model
     // Tentukan nama tabel yang digunakan
     protected $table = 'trx';
 
+    // Tentukan primary key
+    protected $primaryKey = 'trx_id'; // Custom primary key
+
     // Tentukan kolom yang bisa diisi (fillable)
     protected $fillable = [
         'terminal_id',
@@ -41,6 +44,12 @@ class Trx extends Model
     {
         return $this->belongsTo(Terminal::class, 'terminal_id');
     }
+
+    // Tentukan jika tidak ada auto increment pada primary key
+    public $incrementing = true;
+
+    // Tentukan tipe data primary key (big integer)
+    protected $keyType = 'int';
 
     // Relasi dengan model PaymentType
     public function paymentType()

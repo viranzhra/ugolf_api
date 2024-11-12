@@ -14,7 +14,8 @@ return new class extends Migration
     {
         Schema::create('trx', function (Blueprint $table) {
             // $table->engine = 'InnoDB';
-            $table->id('trx_id');
+            // $table->id('trx_id');
+            $table->bigIncrements('trx_id');
             $table->unsignedBigInteger('terminal_id');
             $table->string('trx_code', 100); // Kode transaksi dari frontend
             $table->string('trx_reff', 100); // Referensi transaksi dari backend

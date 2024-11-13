@@ -6,18 +6,66 @@ use App\Models\PaymentType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 class PaymentTypeController extends Controller
 {
     // Menampilkan semua data payment type
-    public function index()
-    {
-        // Ambil semua data payment type, termasuk QRIS dan lainnya jika ada
-        $paymentTypes = PaymentType::all();
+    // public function index()
+    // {
+    //     // Ambil semua data payment type, termasuk QRIS dan lainnya jika ada
+    //     $paymentTypes = PaymentType::all();
 
+    //     return response()->json([
+    //         'success' => true,
+    //         'data' => $paymentTypes,
+    //     ], 200);
+    // }
+
+    public function index(Request $request)
+    {
+        // Get pagination parameters (start and length) from the request
+        $start = $request->input('start', 0);   // Default start is 0
+        $length = $request->input('length', 10); // Default length is 10
+        $search = $request->input('search.value', ''); // Search query, if available
+
+        // Base query for PaymentType with optional join if needed
+        $baseQuery = PaymentType::query()
+        // Uncomment and adjust join if required
+        // ->join('terminals', 'payment_types.terminal_id', '=', 'terminals.terminal_id')
+        ->select(
+            'payment_types.payment_type_id',
+            'payment_types.payment_type_code',
+            'payment_types.payment_type_name',
+            'payment_types.description'
+        );
+
+        // Apply search filter if there’s a search value
+        if ($search) {
+            $baseQuery->where(function ($q) use ($search) {
+                $q->where(DB::raw('LOWER(payment_types.payment_type_code)'), 'LIKE', "%" . strtolower($search) . "%")
+                    ->orWhere(DB::raw('LOWER(payment_types.payment_type_name)'), 'LIKE', "%" . strtolower($search) . "%")
+                    ->orWhere(DB::raw('LOWER(payment_types.description)'), 'LIKE', "%" . strtolower($search) . "%");
+                    // ->orWhere(DB::raw('LOWER(terminals.terminal_code)'), 'LIKE', "%" . strtolower($search) . "%");
+            });
+        }
+
+        // Clone the base query to count filtered records
+        $recordsFiltered = $baseQuery->count();
+
+        // Apply pagination to the query
+        $data = $baseQuery->offset($start)->limit($length)->get();
+
+        // Count total records without filter for recordsTotal
+        $recordsTotal = PaymentType::count();
+
+        // Return data in the desired format for DataTables
         return response()->json([
-            'success' => true,
-            'data' => $paymentTypes,
+            'status' => true,
+            'message' => 'Data berhasil diambil',
+            'recordsTotal' => $recordsTotal,       // Total records in the database
+            'recordsFiltered' => $recordsFiltered, // Total records after filtering
+            'data' => $data                        // Data to be displayed on the page
         ], 200);
     }
 

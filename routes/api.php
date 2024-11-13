@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\MerchantController;
 use App\Http\Controllers\Api\TerminalController;
 use App\Http\Controllers\Api\CmsController;
 use App\Http\Controllers\Api\TrxController;
+use App\Http\Controllers\Api\ConfigController;
 use App\Http\Controllers\Api\PaymentTypeController;
 
 // Rute untuk mendapatkan informasi user (autentikasi menggunakan Sanctum)
@@ -38,6 +39,12 @@ Route::get('/cms', [CmsController::class, 'index']);
 Route::post('/cms', [CmsController::class, 'store']);
 Route::put('/cms/{id}', [CmsController::class, 'update']);
 Route::delete('/cms/{id}', [CmsController::class, 'destroy']);
+
+// cms
+Route::get('/config', [ConfigController::class, 'index']);
+Route::post('/config', [ConfigController::class, 'store']);
+Route::put('/config/{id}', [ConfigController::class, 'update']);
+Route::delete('/config/{id}', [ConfigController::class, 'destroy']);
 
 // Trx
 Route::get('/trx', [TrxController::class, 'index']); // Menampilkan daftar transaksi

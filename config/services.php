@@ -31,4 +31,12 @@ return [
         ],
     ],
 
+    'qris' => [
+        'base_url' => env('QRIS_BASE_URL'),
+        'merchant_id' => env('QRIS_MERCHANT_ID'),
+        'terminal_id' => env('QRIS_TERMINAL_ID'),
+        'secret_key' => env('QRIS_SECRET_KEY'),
+        'authorization' => env('QRIS_AUTHORIZATION'),
+    ],
+
 ];

@@ -57,13 +57,13 @@ class Terminal extends Model
     /**
      * Boot model untuk auto-generate terminal_code.
      */
-    protected static function boot()
-    {
-        parent::boot();
+    // protected static function boot()
+    // {
+    //     parent::boot();
 
-        static::creating(function ($terminal) {
-            // Auto-generate terminal_code dengan format unik
-            $terminal->terminal_code = 'TRM-' . strtoupper(uniqid());
-        });
-    }
+    //     static::creating(function ($terminal) {
+    //         // Auto-generate terminal_code dengan format unik
+    //         $terminal->terminal_code = 'TRM-' . strtoupper(uniqid());
+    //     });
+    // }
 }

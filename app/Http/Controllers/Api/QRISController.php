@@ -33,7 +33,7 @@ class QRISController extends Controller
 
             $transactionData = $request->all();
 
-            $expire = 7200; // Waktu kadaluarsa dalam detik
+            $expire = 5; // Waktu kadaluarsa dalam detik
 
             $merchant = Merchant::where('merchant_code', $transactionData['merchantId'])->first();
             if (!$merchant) {
@@ -57,7 +57,7 @@ class QRISController extends Controller
             $amountPerTicket = Cms::where('terminal_id', $terminal->terminal_id)->where('cms_name', 'price')->value('cms_value');
             $totalAmount = $qty * $amountPerTicket;
 
-            $terminal = Terminal::first();
+            // $terminal = Terminal::first();
             $paymentType = PaymentType::first();
         
             // Buat transaksi baru
@@ -129,6 +129,13 @@ class QRISController extends Controller
                 'success' => false,
                 'message' => 'Transaction not found'
             ], 404);
+        }
+
+        if ($trx->expire <= now()) {
+            return response()->json([
+                'ack' => '08',
+                'message' => 'Transaction has expired'
+            ], 200);
         }
 
         $merchantId = $trx->merchant_code;

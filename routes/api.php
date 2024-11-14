@@ -8,14 +8,15 @@ use App\Http\Controllers\Api\CmsController;
 use App\Http\Controllers\Api\TrxController;
 use App\Http\Controllers\Api\ConfigController;
 use App\Http\Controllers\Api\PaymentTypeController;
+use App\Http\Controllers\Api\QRISController;
 
 // Rute untuk mendapatkan informasi user (autentikasi menggunakan Sanctum)
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/ping/{id}', [TerminalController::class, 'ping']);
-Route::get('/cekping/{id}', [TerminalController::class, 'ping']);
+Route::post('/ping', [TerminalController::class, 'ping']);
+// Route::get('/cekping/{id}', [TerminalController::class, 'ping']);
 Route::get('/check/{id}', [TerminalController::class, 'checkDeviceStatus']);
 Route::get('/status/{id}', [TerminalController::class, 'getDeviceStatus']);
 
@@ -59,3 +60,7 @@ Route::post('paymentType', [PaymentTypeController::class, 'store']);
 Route::put('paymentType/{id}', [PaymentTypeController::class, 'update']);
 Route::delete('paymentType/{id}', [PaymentTypeController::class, 'destroy']);
 
+// QRIS
+Route::post('/qris/generate', [QRISController::class, 'generate'])->name('qris.generate');
+Route::post('/qris/check-status', [QRISController::class, 'checkStatus'])->name('qris.check_status');
+// Route::post('/qris/callback', [QRISController::class, 'callback'])->name('qris.callback');

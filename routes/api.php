@@ -9,11 +9,17 @@ use App\Http\Controllers\Api\TrxController;
 use App\Http\Controllers\Api\ConfigController;
 use App\Http\Controllers\Api\PaymentTypeController;
 use App\Http\Controllers\Api\QRISController;
+use App\Http\Controllers\Api\AuthJWTController;
 
-// Rute untuk mendapatkan informasi user (autentikasi menggunakan Sanctum)
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+/* Autentikasi JWT */
+Route::post('register', [AuthJWTController::class, 'register']);
+Route::post('login', [AuthJWTController::class, 'login']);
+Route::middleware(['jwt.verify'])->get('/user', [AuthJWTController::class, 'getUserData']);
+
+// // Rute untuk mendapatkan informasi user (autentikasi menggunakan Sanctum)
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 Route::post('/ping', [TerminalController::class, 'ping']);
 // Route::get('/cekping/{id}', [TerminalController::class, 'ping']);

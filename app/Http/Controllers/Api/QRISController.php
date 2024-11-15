@@ -33,7 +33,7 @@ class QRISController extends Controller
 
             $transactionData = $request->all();
 
-            $expire = 5; // Waktu kadaluarsa dalam detik
+            $expire = 10; // Waktu kadaluarsa dalam detik
 
             $merchant = Merchant::where('merchant_code', $transactionData['merchantId'])->first();
             if (!$merchant) {

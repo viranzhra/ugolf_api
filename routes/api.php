@@ -116,10 +116,9 @@ Route::delete('paymentType/{id}', [PaymentTypeController::class, 'destroy']);
 
 Route::post('/frontend/init', [FrontEndController::class, 'init']);
 
-// QRIS
+// QRIS Payment
 Route::post('/qris/generate', [QRISController::class, 'generate'])->name('qris.generate');
 Route::post('/qris/check-status', [QRISController::class, 'checkStatus'])->name('qris.check_status');
-// Route::post('/qris/callback', [QRISController::class, 'callback'])->name('qris.callback');
 
 // Role Management
 Route::get('/roles', [RoleController::class, 'index']);

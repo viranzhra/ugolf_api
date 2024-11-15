@@ -35,9 +35,7 @@ class QRISController extends Controller
 
             $transactionData = $request->all();
 
-<<<<<<< HEAD
             $expire = 60; // Waktu kadaluarsa dalam detik
-=======
             $expire = $transactionData['expire'] ?? 5;
 
             // $checkMerchantTerminal = DB::table('terminals')
@@ -50,7 +48,6 @@ class QRISController extends Controller
             //     'success' => false,
             //     'message' => $checkMerchantTerminal
             // ], 404);
->>>>>>> e36d5e62677a3a57f2e4900e487d850af454c4de
 
             $merchant = Merchant::where('merchant_code', $transactionData['merchantId'])->first();
             if (!$merchant) {

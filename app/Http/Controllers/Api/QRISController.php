@@ -28,12 +28,13 @@ class QRISController extends Controller
             $request->validate([
                 'merchantId' => 'required|string',
                 'terminalId' => 'required|string',
-                'qty' => 'required|integer|min:1'
+                'qty' => 'required|integer|min:1',
+                'expire' => 'required|integer|min:5',
             ]);
 
             $transactionData = $request->all();
 
-            $expire = 10; // Waktu kadaluarsa dalam detik
+            $expire = $transactionData['expire'] ?? 5;
 
             $merchant = Merchant::where('merchant_code', $transactionData['merchantId'])->first();
             if (!$merchant) {
@@ -105,7 +106,7 @@ class QRISController extends Controller
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Gagal menghasilkan QRIS. Silakan coba lagi.'
+                    'message' => 'Gagal membuat transaksi. Silakan coba lagi.'
                 ], 400);
             }        
         }

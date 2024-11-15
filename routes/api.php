@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\PaymentTypeController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\FrontEndController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\QRISController;
 
 // Rute untuk mendapatkan informasi user (autentikasi menggunakan Sanctum)
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

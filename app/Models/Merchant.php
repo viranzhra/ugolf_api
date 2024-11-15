@@ -49,13 +49,13 @@ class Merchant extends Model
     /**
      * Boot model untuk auto-generate merchant_code.
      */
-    protected static function boot()
-    {
-        parent::boot();
+    // protected static function boot()
+    // {
+    //     parent::boot();
 
-        static::creating(function ($merchant) {
-            // Auto-generate merchant_code dengan format unik
-            $merchant->merchant_code = 'MRC-' . strtoupper(uniqid());
-        });
-    }
+    //     static::creating(function ($merchant) {
+    //         // Auto-generate merchant_code dengan format unik
+    //         $merchant->merchant_code = 'MRC-' . strtoupper(uniqid());
+    //     });
+    // }
 }

@@ -8,21 +8,77 @@ use App\Http\Controllers\Api\CmsController;
 use App\Http\Controllers\Api\TrxController;
 use App\Http\Controllers\Api\ConfigController;
 use App\Http\Controllers\Api\PaymentTypeController;
+<<<<<<< HEAD
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\FrontEndController;
+=======
 use App\Http\Controllers\Api\QRISController;
-use App\Http\Controllers\Api\AuthJWTController;
+>>>>>>> ef25aad5848725978aa9ae78ade16c9b465c5189
 
-/* Autentikasi JWT */
-Route::post('register', [AuthJWTController::class, 'register']);
-Route::post('login', [AuthJWTController::class, 'login']);
-Route::middleware(['jwt.verify'])->get('/user', [AuthJWTController::class, 'getUserData']);
-
-// // Rute untuk mendapatkan informasi user (autentikasi menggunakan Sanctum)
+// Rute untuk mendapatkan informasi user (autentikasi menggunakan Sanctum)
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
 
+Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/profile', [AuthController::class, 'profile']);
+
+    // Route::post('/ping/{id}', [TerminalController::class, 'ping']);
+    // Route::get('/cekping/{id}', [TerminalController::class, 'ping']);
+    // Route::get('/check/{id}', [TerminalController::class, 'checkDeviceStatus']);
+    // Route::get('/status/{id}', [TerminalController::class, 'getDeviceStatus']);
+
+    // // Rute Merchant
+    // Route::get('/merchant', [MerchantController::class, 'index']);
+    // Route::post('/merchant', [MerchantController::class, 'store']);
+    // Route::get('/merchant/code', [MerchantController::class, 'getMerchantCode']);
+    // Route::get('/merchant/{id}', [MerchantController::class, 'edit']);
+    // Route::put('/merchant/{id}', [MerchantController::class, 'update']);
+    // Route::delete('/merchant/{id}', [MerchantController::class, 'destroy']); 
+
+    // // Rute Terminal
+    // Route::get('/terminal', [TerminalController::class, 'index']);
+    // Route::post('/terminal', [TerminalController::class, 'store']);
+    // Route::get('/terminal/{id}', [TerminalController::class, 'edit']);
+    // Route::put('/terminal/{id}', [TerminalController::class, 'update']);
+    // Route::delete('/terminal/{id}', [TerminalController::class, 'destroy']);
+
+    // // cms
+    // Route::get('/cms', [CmsController::class, 'index']);
+    // Route::post('/cms', [CmsController::class, 'store']);
+    // Route::put('/cms/{id}', [CmsController::class, 'update']);
+    // Route::delete('/cms/{id}', [CmsController::class, 'destroy']);
+
+    // // cms
+    // Route::get('/config', [ConfigController::class, 'index']);
+    // Route::post('/config', [ConfigController::class, 'store']);
+    // Route::put('/config/{id}', [ConfigController::class, 'update']);
+    // Route::delete('/config/{id}', [ConfigController::class, 'destroy']);
+
+    // // Trx
+    // Route::get('/trx', [TrxController::class, 'index']); // Menampilkan daftar transaksi
+    // Route::post('/trx', [TrxController::class, 'store']); // Menyimpan transaksi baru
+    // Route::put('/trx/{id}', [TrxController::class, 'update']); // Memperbarui transaksi berdasarkan ID
+    // Route::delete('/trx/{id}', [TrxController::class, 'destroy']); // Menghapus transaksi berdasarkan ID
+
+    // // PaymentType
+    // Route::get('paymentType', [PaymentTypeController::class, 'index']);
+    // Route::get('paymentType/{id}', [PaymentTypeController::class, 'show']);
+    // Route::post('paymentType', [PaymentTypeController::class, 'store']);
+    // Route::put('paymentType/{id}', [PaymentTypeController::class, 'update']);
+    // Route::delete('paymentType/{id}', [PaymentTypeController::class, 'destroy']);
+});
+
+<<<<<<< HEAD
+
+Route::post('/ping/{id}', [TerminalController::class, 'ping']);
+Route::get('/cekping/{id}', [TerminalController::class, 'ping']);
+=======
 Route::post('/ping', [TerminalController::class, 'ping']);
 // Route::get('/cekping/{id}', [TerminalController::class, 'ping']);
+>>>>>>> ef25aad5848725978aa9ae78ade16c9b465c5189
 Route::get('/check/{id}', [TerminalController::class, 'checkDeviceStatus']);
 Route::get('/status/{id}', [TerminalController::class, 'getDeviceStatus']);
 
@@ -66,7 +122,11 @@ Route::post('paymentType', [PaymentTypeController::class, 'store']);
 Route::put('paymentType/{id}', [PaymentTypeController::class, 'update']);
 Route::delete('paymentType/{id}', [PaymentTypeController::class, 'destroy']);
 
+<<<<<<< HEAD
+Route::post('/frontend/init', [FrontEndController::class, 'init']);
+=======
 // QRIS
 Route::post('/qris/generate', [QRISController::class, 'generate'])->name('qris.generate');
 Route::post('/qris/check-status', [QRISController::class, 'checkStatus'])->name('qris.check_status');
 // Route::post('/qris/callback', [QRISController::class, 'callback'])->name('qris.callback');
+>>>>>>> ef25aad5848725978aa9ae78ade16c9b465c5189

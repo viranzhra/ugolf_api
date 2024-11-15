@@ -12,6 +12,7 @@ use App\Models\PaymentType;
 use App\Models\Config;
 use App\Models\Cms;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 
 class QRISController extends Controller
@@ -28,12 +29,28 @@ class QRISController extends Controller
             $request->validate([
                 'merchantId' => 'required|string',
                 'terminalId' => 'required|string',
-                'qty' => 'required|integer|min:1'
+                'qty' => 'required|integer|min:1',
+                'expire' => 'required|integer|min:5',
             ]);
 
             $transactionData = $request->all();
 
+<<<<<<< HEAD
             $expire = 60; // Waktu kadaluarsa dalam detik
+=======
+            $expire = $transactionData['expire'] ?? 5;
+
+            // $checkMerchantTerminal = DB::table('terminals')
+            //     ->join('merchants', 'terminals.merchant_id', '=', 'merchants.merchant_id')
+            //     ->where('terminals.terminal_code', $transactionData['terminalId'])
+            //     ->where('merchants.merchant_code', $transactionData['merchantId'])
+            //     ->first();
+
+            // return response()->json([
+            //     'success' => false,
+            //     'message' => $checkMerchantTerminal
+            // ], 404);
+>>>>>>> e36d5e62677a3a57f2e4900e487d850af454c4de
 
             $merchant = Merchant::where('merchant_code', $transactionData['merchantId'])->first();
             if (!$merchant) {
@@ -105,7 +122,7 @@ class QRISController extends Controller
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Gagal menghasilkan QRIS. Silakan coba lagi.'
+                    'message' => 'Gagal membuat transaksi. Silakan coba lagi.'
                 ], 400);
             }        
         }

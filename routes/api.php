@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\ConfigController;
 use App\Http\Controllers\Api\PaymentTypeController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\FrontEndController;
+use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\QRISController;
 
 // Rute untuk mendapatkan informasi user (autentikasi menggunakan Sanctum)
@@ -73,6 +74,8 @@ Route::post('/ping/{id}', [TerminalController::class, 'ping']);
 Route::get('/cekping/{id}', [TerminalController::class, 'ping']);
 Route::post('/ping', [TerminalController::class, 'ping']);
 // Route::get('/cekping/{id}', [TerminalController::class, 'ping']);
+Route::post('/ping/{id}', [TerminalController::class, 'ping']);
+Route::get('/cekping/{id}', [TerminalController::class, 'ping']);
 Route::get('/check/{id}', [TerminalController::class, 'checkDeviceStatus']);
 Route::get('/status/{id}', [TerminalController::class, 'getDeviceStatus']);
 
@@ -121,3 +124,17 @@ Route::post('/frontend/init', [FrontEndController::class, 'init']);
 Route::post('/qris/generate', [QRISController::class, 'generate'])->name('qris.generate');
 Route::post('/qris/check-status', [QRISController::class, 'checkStatus'])->name('qris.check_status');
 // Route::post('/qris/callback', [QRISController::class, 'callback'])->name('qris.callback');
+
+// QRIS Payment
+Route::post('/qris/generate', [QRISController::class, 'generate'])->name('qris.generate');
+Route::post('/qris/check-status', [QRISController::class, 'checkStatus'])->name('qris.check_status');
+
+// Role Management
+Route::get('/roles', [RoleController::class, 'index']);
+Route::get('/roles/create', [RoleController::class, 'create']);
+Route::post('/roles', [RoleController::class, 'store']);
+Route::get('/roles/{id}/edit', [RoleController::class, 'edit']);
+Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
+Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
+Route::get('/roles/assign', [RoleController::class, 'indexAssignRole']);
+Route::put('/roles/assign/{user}', [RoleController::class, 'assignRole'])->name('roles.assign');

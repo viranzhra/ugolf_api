@@ -12,6 +12,7 @@ use App\Models\PaymentType;
 use App\Models\Config;
 use App\Models\Cms;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 
 class QRISController extends Controller
@@ -35,6 +36,17 @@ class QRISController extends Controller
             $transactionData = $request->all();
 
             $expire = $transactionData['expire'] ?? 5;
+
+            // $checkMerchantTerminal = DB::table('terminals')
+            //     ->join('merchants', 'terminals.merchant_id', '=', 'merchants.merchant_id')
+            //     ->where('terminals.terminal_code', $transactionData['terminalId'])
+            //     ->where('merchants.merchant_code', $transactionData['merchantId'])
+            //     ->first();
+
+            // return response()->json([
+            //     'success' => false,
+            //     'message' => $checkMerchantTerminal
+            // ], 404);
 
             $merchant = Merchant::where('merchant_code', $transactionData['merchantId'])->first();
             if (!$merchant) {

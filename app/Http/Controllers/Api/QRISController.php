@@ -35,6 +35,7 @@ class QRISController extends Controller
 
             $transactionData = $request->all();
 
+            $expire = 60; // Waktu kadaluarsa dalam detik
             $expire = $transactionData['expire'] ?? 5;
 
             // $checkMerchantTerminal = DB::table('terminals')

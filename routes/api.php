@@ -69,6 +69,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::delete('paymentType/{id}', [PaymentTypeController::class, 'destroy']);
 });
 
+
+Route::post('/ping/{id}', [TerminalController::class, 'ping']);
+Route::get('/cekping/{id}', [TerminalController::class, 'ping']);
+Route::post('/ping', [TerminalController::class, 'ping']);
+// Route::get('/cekping/{id}', [TerminalController::class, 'ping']);
 Route::post('/ping/{id}', [TerminalController::class, 'ping']);
 Route::get('/cekping/{id}', [TerminalController::class, 'ping']);
 Route::get('/check/{id}', [TerminalController::class, 'checkDeviceStatus']);
@@ -115,6 +120,10 @@ Route::put('paymentType/{id}', [PaymentTypeController::class, 'update']);
 Route::delete('paymentType/{id}', [PaymentTypeController::class, 'destroy']);
 
 Route::post('/frontend/init', [FrontEndController::class, 'init']);
+// QRIS
+Route::post('/qris/generate', [QRISController::class, 'generate'])->name('qris.generate');
+Route::post('/qris/check-status', [QRISController::class, 'checkStatus'])->name('qris.check_status');
+// Route::post('/qris/callback', [QRISController::class, 'callback'])->name('qris.callback');
 
 // QRIS Payment
 Route::post('/qris/generate', [QRISController::class, 'generate'])->name('qris.generate');

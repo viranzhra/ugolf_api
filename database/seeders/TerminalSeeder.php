@@ -21,25 +21,39 @@ class TerminalSeeder extends Seeder
         // Pastikan terdapat merchant dalam tabel merchants
         $merchants = Merchant::all();
 
-        if ($merchants->isEmpty()) {
-            $this->command->info('No merchants found, please seed merchants first.');
-            return;
-        }
+        Terminal::create([
+            'merchant_id' => 1,
+            'terminal_code' => '10010005',
+            'terminal_name' => $faker->streetName,
+            'terminal_address' => $faker->address,
+            'description' => $faker->sentence,
+            'status' => 'aktif',
+            'created_by' => 1, 
+            'updated_by' => 1,
+            'deleted_by' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
-        foreach (range(1, 5) as $index) {
-            Terminal::create([
-                'merchant_id' => $merchants->random()->merchant_id,  // Pilih merchant_id acak dari merchant yang ada
-                'terminal_code' => 'TM-' . strtoupper($faker->unique()->bothify('??####')), // Contoh kode: TM-AB1234
-                'terminal_name' => $faker->streetName,
-                'terminal_address' => $faker->address,
-                'description' => $faker->sentence,
-                'status' => $faker->randomElement(['aktif', 'non-aktif']),
-                'created_by' => 1,  // ID admin atau pengguna default
-                'updated_by' => 1,  // ID admin atau pengguna default
-                'deleted_by' => null, // Tidak ada penghapusan
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
+        // if ($merchants->isEmpty()) {
+        //     $this->command->info('No merchants found, please seed merchants first.');
+        //     return;
+        // }
+
+        // foreach (range(1, 2) as $index) {
+        //     Terminal::create([
+        //         'merchant_id' => $merchants->random()->merchant_id,  // Pilih merchant_id acak dari merchant yang ada
+        //         'terminal_code' => 'TM-' . strtoupper($faker->unique()->bothify('??####')), // Contoh kode: TM-AB1234
+        //         'terminal_name' => $faker->streetName,
+        //         'terminal_address' => $faker->address,
+        //         'description' => $faker->sentence,
+        //         'status' => $faker->randomElement(['aktif', 'non-aktif']),
+        //         'created_by' => 1,  // ID admin atau pengguna default
+        //         'updated_by' => 1,  // ID admin atau pengguna default
+        //         'deleted_by' => null, // Tidak ada penghapusan
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ]);
+        // }
     }
 }

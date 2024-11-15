@@ -29,5 +29,10 @@ class DatabaseSeeder extends Seeder
         //     'password' => Hash::make('user123'),
         //     // 'role' => 'user', // Pastikan ada kolom 'role' di tabel users
         // ]);
+
+        $this->call(MerchantSeeder::class);
+        $this->call(TerminalSeeder::class);
+        $this->call(CmsSeeder::class);
+        $this->call(PaymentTypeSeeder::class);
     }
 }

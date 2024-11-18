@@ -14,6 +14,10 @@ class RolePermissionSeeder extends Seeder
         $permissions = [
             'merchant.view', 'merchant.create', 'merchant.edit', 'merchant.delete',
             'terminal.view', 'terminal.create', 'terminal.edit', 'terminal.delete',
+            'cms.view', 'cms.create', 'cms.edit', 'cms.delete',
+            'payment type.view', 'payment type.create', 'payment type.edit', 'payment type.delete',
+            'config.view', 'config.create', 'config.edit', 'config.delete',
+            'transaction.view', 'transaction.create', 'transaction.edit', 'transaction.delete',
             'role.view', 'role.create', 'role.edit', 'role.delete',
         ];
 

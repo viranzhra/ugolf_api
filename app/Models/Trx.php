@@ -49,7 +49,7 @@ class Trx extends Model
     public $incrementing = true;
 
     // Tentukan tipe data primary key (big integer)
-    protected $keyType = 'int';
+    // protected $keyType = 'int';
 
     // Relasi dengan model PaymentType
     public function paymentType()

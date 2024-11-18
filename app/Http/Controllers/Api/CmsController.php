@@ -63,6 +63,29 @@ class CmsController extends Controller
         ], 200);
     }
 
+    public function getByTerminalCode($terminal_code)
+    {
+        // Base query for Cms with join to terminals table for terminal_code
+        $baseQuery = Cms::query()
+            ->join('terminals', 'cms.terminal_id', '=', 'terminals.terminal_id')
+            ->select(
+                'cms.terminal_id',
+                'cms.cms_code',
+                'cms.cms_name',
+                'cms.cms_value',
+                'terminals.terminal_code'
+            )
+            ->where('terminals.terminal_code', $terminal_code)
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Data CMS berhasil diambil',
+            'data' => $baseQuery
+        ], 200);
+
+    }
+
     // public function index()
     // {
     //     // Mengambil semua data CMS

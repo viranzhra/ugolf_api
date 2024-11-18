@@ -103,6 +103,7 @@ Route::delete('/terminal/{id}', [TerminalController::class, 'destroy']);
 
 // cms
 Route::get('/cms', [CmsController::class, 'index']);
+Route::get('/cms/get-by-code/{terminal_code}', [CmsController::class, 'getByTerminalCode']);
 Route::post('/cms', [CmsController::class, 'store']);
 Route::put('/cms/{id}', [CmsController::class, 'update']);
 Route::delete('/cms/{id}', [CmsController::class, 'destroy']);
@@ -115,6 +116,7 @@ Route::delete('/config/{id}', [ConfigController::class, 'destroy']);
 
 // Trx
 Route::get('/trx', [TrxController::class, 'index']); // Menampilkan daftar transaksi
+Route::get('/trx/{id}', [TrxController::class, 'show']); // Menampilkan daftar transaksi
 Route::post('/trx', [TrxController::class, 'store']); // Menyimpan transaksi baru
 Route::put('/trx/{id}', [TrxController::class, 'update']); // Memperbarui transaksi berdasarkan ID
 Route::delete('/trx/{id}', [TrxController::class, 'destroy']); // Menghapus transaksi berdasarkan ID

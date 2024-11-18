@@ -85,8 +85,8 @@ class TrxController extends Controller
         if ($search) {
             $baseQuery->where(function ($query) use ($search) {
                 $query->where('trx_code', 'LIKE', "%" . strtolower($search) . "%")
-                        ->orWhere('trx_reff', 'LIKE', "%" . strtolower($search) . "%")
-                        ->orWhere('paycode', 'LIKE', "%" . strtolower($search) . "%");
+                    ->orWhere('trx_reff', 'LIKE', "%" . strtolower($search) . "%")
+                    ->orWhere('paycode', 'LIKE', "%" . strtolower($search) . "%");
             });
         }
 
@@ -178,7 +178,35 @@ class TrxController extends Controller
 
     public function show($trx_id)
     {
-        $transaction = Trx::findOrFail($trx_id);
+        $transaction = DB::table('trx')
+            ->leftJoin('terminals', 'trx.terminal_id', '=', 'terminals.terminal_id')
+            ->leftJoin('payment_types', 'trx.payment_type_id', '=', 'payment_types.payment_type_id')
+            ->select(
+                'trx.trx_id',
+                'trx.trx_code',
+                'trx.trx_reff',
+                'trx.amount',
+                'trx.qty',
+                'trx.total_amount',
+                'trx.paycode',
+                'trx.expire',
+                'trx.trx_date',
+                'trx.payment_status',
+                'trx.payment_date',
+                'trx.payment_name',
+                'trx.payment_phone',
+                'trx.reffnumber',
+                'trx.issuer_reffnumber',
+                'terminals.terminal_name',
+                'payment_types.payment_type_name'
+            )
+            ->where('trx.trx_id', $trx_id)
+            ->first(); // Get the first result
+
+        if (!$transaction) {
+            return response()->json(['message' => 'Transaction not found'], 404);
+        }
+
         return response()->json($transaction);
     }
 

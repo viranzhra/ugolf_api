@@ -35,8 +35,8 @@ class QRISController extends Controller
 
             $transactionData = $request->all();
 
-            $expire = 60; // Waktu kadaluarsa dalam detik
-            $expire = $transactionData['expire'] ?? 5;
+            // $expire = 60; 
+            $expire = $transactionData['expire'] ?? 5; // Kadaluarsa dalam detik
 
             // $checkMerchantTerminal = DB::table('terminals')
             //     ->join('merchants', 'terminals.merchant_id', '=', 'merchants.merchant_id')
@@ -111,7 +111,7 @@ class QRISController extends Controller
             if ($response['ack'] == '00') {
                 $data = json_decode(base64_decode($response['data']), true);
 
-                // Simpan data QRIS ke transaksi
+                // Perbarui data transaksi
                 $transaction->paycode = $data['rawQRIS'];
                 $transaction->reffnumber = $data['reffNumber'];
                 $transaction->expire = now()->addSeconds((int)$data['expire']); // update expire

@@ -297,48 +297,83 @@ class TerminalController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, $id)
-    {
-        // Validasi input dari pengguna
-        $request->validate([
-            'terminal_name' => 'required|string|max:100',
-            'terminal_address' => 'required|string',
-            'description' => 'nullable|string',
-        ]);
 
-        // Cari terminal berdasarkan ID
-        $terminal = Terminal::find($id);
+public function update(Request $request, $id)
+{
+    $terminal = Terminal::find($id);
 
-        if (!$terminal) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Terminal tidak ditemukan',
-            ], 404);
-        }
-
-        // Menambahkan pengecekan agar kode terminal tidak dapat diubah
-        if ($request->input('terminal_code') && $request->input('terminal_code') !== $terminal->terminal_code) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Kode terminal tidak dapat diubah',
-            ], 400);
-        }
-
-        // Update data terminal
-        $terminal->terminal_name = $request->input('terminal_name');
-        $terminal->terminal_address = $request->input('terminal_address');
-        $terminal->description = $request->input('description');
-        $terminal->status = 'aktif'; // Set status menjadi aktif
-        $terminal->updated_by = Auth::check() ? Auth::id() : 1; // Set ID user yang mengedit
-        $terminal->updated_at = now();
-        $terminal->save();
-
+    if (!$terminal) {
         return response()->json([
-            'status' => 'success',
-            'message' => 'Terminal berhasil diperbarui',
-            'data' => $terminal,
-        ], 200);
+            'status' => 'error',
+            'message' => 'Terminal tidak ditemukan'
+        ], 404);
     }
+
+    // Validasi data yang diterima
+    $validated = $request->validate([
+        'terminal_name' => 'required|string',
+        'terminal_address' => 'required|string',
+        'description' => 'nullable|string',
+    ]);
+
+    // Update data terminal
+    $terminal->terminal_name = $validated['terminal_name'];
+    $terminal->terminal_address = $validated['terminal_address'];
+    $terminal->description = $validated['description'] ?? $terminal->description;
+    $terminal->save();
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Terminal berhasil diupdate',
+        'data' => $terminal
+    ]);
+}
+
+    
+    // public function update(Request $request, $id)
+    // {
+    //     // Validasi input dari pengguna
+    //     $request->validate([
+    //         'merchant_code' => 'required|string|max:100|unique:merchants,merchant_code,' . $id . ',merchant_id',
+    //         'terminal_code' => 'required|string|max:100|unique:terminals,terminal_code,' . $id . ',terminal_id',
+    //         'terminal_name' => 'required|string|max:100',
+    //         'terminal_address' => 'required|string',
+    //         'description' => 'nullable|string',
+    //     ]);
+
+    //     // Cari terminal berdasarkan ID
+    //     $terminal = Terminal::find($id);
+
+    //     if (!$terminal) {
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Terminal tidak ditemukan',
+    //         ], 404);
+    //     }
+
+    //     // Menambahkan pengecekan agar kode terminal tidak dapat diubah
+    //     if ($request->input('terminal_code') && $request->input('terminal_code') !== $terminal->terminal_code) {
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Kode terminal tidak dapat diubah',
+    //         ], 400);
+    //     }
+
+    //     // Update data terminal
+    //     $terminal->terminal_name = $request->input('terminal_name');
+    //     $terminal->terminal_address = $request->input('terminal_address');
+    //     $terminal->description = $request->input('description');
+    //     $terminal->status = 'aktif'; // Set status menjadi aktif
+    //     $terminal->updated_by = Auth::check() ? Auth::id() : 1; // Set ID user yang mengedit
+    //     $terminal->updated_at = now();
+    //     $terminal->save();
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'Terminal berhasil diperbarui',
+    //         'data' => $terminal,
+    //     ], 200);
+    // }
 
     /**
      * Menghapus terminal berdasarkan ID.
@@ -346,6 +381,7 @@ class TerminalController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
+
     public function destroy($id)
     {
         // Cari terminal berdasarkan ID
@@ -358,16 +394,38 @@ class TerminalController extends Controller
             ], 404);
         }
 
-        // Hapus terminal dengan soft delete dan set status menjadi non-aktif
-        $terminal->deleted_by = Auth::check() ? Auth::id() : 1; // ID user yang menghapus
-        $terminal->deleted_at = now(); // Waktu penghapusan
-        $terminal->status = 'non-aktif'; // Set status menjadi non-aktif
-        $terminal->save();
-        $terminal->delete();
+        // Hapus terminal secara permanen
+        $terminal->forceDelete();
 
         return response()->json([
             'status' => 'success',
             'message' => 'Terminal berhasil dihapus',
         ], 200);
     }
+
+    
+    // public function destroy($id)
+    // {
+    //     // Cari terminal berdasarkan ID
+    //     $terminal = Terminal::find($id);
+
+    //     if (!$terminal) {
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Terminal tidak ditemukan',
+    //         ], 404);
+    //     }
+
+    //     // Hapus terminal dengan soft delete dan set status menjadi non-aktif
+    //     $terminal->deleted_by = Auth::check() ? Auth::id() : 1; // ID user yang menghapus
+    //     $terminal->deleted_at = now(); // Waktu penghapusan
+    //     $terminal->status = 'non-aktif'; // Set status menjadi non-aktif
+    //     $terminal->save();
+    //     $terminal->delete();
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'Terminal berhasil dihapus',
+    //     ], 200);
+    // }
 }

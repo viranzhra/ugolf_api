@@ -236,25 +236,46 @@ class MerchantController extends Controller
 
     public function destroy($id)
     {
+        // Cari Merchant berdasarkan ID
         $merchant = Merchant::find($id);
 
         if (!$merchant) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Merchant tidak ditemukan'
+                'message' => 'Merchant tidak ditemukan',
             ], 404);
         }
 
-        $merchant->deleted_by = Auth::check() ? Auth::id() : 1; // Default ke ID 1 jika tidak terautentikasi
-        $merchant->deleted_at = now();
-        $merchant->save();
-        $merchant->delete();
+        // Hapus Merchant secara permanen
+        $merchant->forceDelete();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Merchant berhasil dihapus'
+            'message' => 'Merchant berhasil dihapus',
         ], 200);
     }
+
+    // public function destroy($id)
+    // {
+    //     $merchant = Merchant::find($id);
+
+    //     if (!$merchant) {
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Merchant tidak ditemukan'
+    //         ], 404);
+    //     }
+
+    //     $merchant->deleted_by = Auth::check() ? Auth::id() : 1; // Default ke ID 1 jika tidak terautentikasi
+    //     $merchant->deleted_at = now();
+    //     $merchant->save();
+    //     $merchant->delete();
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'Merchant berhasil dihapus'
+    //     ], 200);
+    // }
 
     //     /**
     //      * Menampilkan daftar semua merchant.

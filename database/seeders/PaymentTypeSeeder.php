@@ -11,10 +11,10 @@ class PaymentTypeSeeder extends Seeder
     {
         // Seed data for QRIS
         PaymentType::create([
-            'payment_type_code' => 'QRIS',
+            'payment_type_code' => 'PT01',
             'payment_type_name' => 'QRIS',
             'description' => 'Payment method using QRIS',
-            'created_by' => 1, // Use a default user or adjust as needed
+            'created_by' => 1,
             'updated_by' => 1,
             'deleted_by' => null,
             'created_at' => now(),

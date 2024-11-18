@@ -20,7 +20,7 @@ class CmsSeeder extends Seeder
             'terminal_id' => 1,
             'cms_code' => 1,
             'cms_name' => 'price',
-            'cms_value' => '500',
+            'cms_value' => '100',
             'created_by' => 1,
         ]);
 

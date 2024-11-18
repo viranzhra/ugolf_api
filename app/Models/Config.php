@@ -12,6 +12,8 @@ class Config extends Model
     // Tentukan nama tabel yang digunakan
     protected $table = 'configs';
 
+    protected $primaryKey = 'config_id'; // Primary key
+
     // Tentukan kolom yang bisa diisi (fillable)
     protected $fillable = [
         'terminal_id',

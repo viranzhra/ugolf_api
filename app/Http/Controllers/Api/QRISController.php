@@ -72,7 +72,13 @@ class QRISController extends Controller
             $totalAmount = $qty * $amountPerTicket;
 
             // $terminal = Terminal::first();
-            $paymentType = PaymentType::first();
+            // $paymentType = PaymentType::first();
+            $paymentType = DB::table('configs')
+                ->join('payment_types', 'payment_types.payment_type_id', '=', 'configs.payment_type_id')
+                ->join('terminals', 'terminals.terminal_id', '=', 'configs.terminal_id')
+                ->where('terminals.terminal_code', $terminal->terminal_code)
+                ->select('payment_types.payment_type_id')
+                ->first();
         
             // Buat transaksi baru
             $transaction = new Trx();

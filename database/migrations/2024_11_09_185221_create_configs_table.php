@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id('config_id');
             $table->unsignedBigInteger('terminal_id');
             $table->unsignedBigInteger('payment_type_id');
-            $table->string('config_merchant_id', 100);
-            $table->string('config_terminal_id', 100);
-            $table->string('config_pos_id', 100);
-            $table->string('config_user', 100);
-            $table->string('config_password', 100);
+            $table->string('config_merchant_id', 100)->nullable();
+            $table->string('config_terminal_id', 100)->nullable();
+            $table->string('config_pos_id', 100)->nullable();
+            $table->string('config_user', 100)->nullable();
+            $table->string('config_password', 100)->nullable();            
             $table->unsignedBigInteger('created_by');
             $table->timestamps(6); // created_at, updated_at
             $table->unsignedBigInteger('updated_by')->nullable();

@@ -9,19 +9,26 @@ use App\Http\Controllers\Api\TrxController;
 use App\Http\Controllers\Api\ConfigController;
 use App\Http\Controllers\Api\PaymentTypeController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\AuthJWTController;
 use App\Http\Controllers\FrontEndController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\QRISController;
+
+/* Autentikasi JWT */
+Route::post('register', [AuthJWTController::class, 'register']);
+Route::post('login', [AuthJWTController::class, 'login']);
+Route::middleware(['jwt.verify'])->get('/user', [AuthJWTController::class, 'getUserData']);
+Route::get('/profile', [AuthController::class, 'profile']);
 
 // Rute untuk mendapatkan informasi user (autentikasi menggunakan Sanctum)
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
 
-Route::post('/login', [AuthController::class, 'login']);
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/profile', [AuthController::class, 'profile']);
+// Route::post('/login', [AuthController::class, 'login']);
+// Route::middleware('auth:sanctum')->group(function () {
+//     Route::post('/logout', [AuthController::class, 'logout']);
+//     Route::get('/profile', [AuthController::class, 'profile']);
 
     // Route::post('/ping/{id}', [TerminalController::class, 'ping']);
     // Route::get('/cekping/{id}', [TerminalController::class, 'ping']);
@@ -67,7 +74,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::post('paymentType', [PaymentTypeController::class, 'store']);
     // Route::put('paymentType/{id}', [PaymentTypeController::class, 'update']);
     // Route::delete('paymentType/{id}', [PaymentTypeController::class, 'destroy']);
-});
+// });
 
 
 Route::post('/ping/{id}', [TerminalController::class, 'ping']);

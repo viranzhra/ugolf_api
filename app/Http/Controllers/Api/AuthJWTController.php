@@ -67,4 +67,11 @@ class AuthJWTController extends Controller
             // })->unique(), // Nama permissions
         ]);
     }
+
+    public function profile(Request $request)
+    {
+        return response()->json([
+            'user' => $request->user(),
+        ]);
+    }
 }

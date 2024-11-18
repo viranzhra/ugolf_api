@@ -35,5 +35,6 @@ class DatabaseSeeder extends Seeder
         $this->call(CmsSeeder::class);
         $this->call(PaymentTypeSeeder::class);
         $this->call(ConfigSeeder::class);
+        $this->call(RolePermissionSeeder::class);
     }
 }

@@ -139,7 +139,7 @@ class TerminalController extends Controller
         // Return the data in DataTables format
         return response()->json([
             'status' => true,
-            'message' => 'Data terminal berhasil diambil',
+            'message' => 'Data merchant berhasil diambil',
             'recordsTotal' => $recordsTotal, // Total records in the database
             'recordsFiltered' => $recordsFiltered, // Total records after filtering
             'data' => $terminalData // Data to display on the page
@@ -173,7 +173,8 @@ class TerminalController extends Controller
         }
 
         // Auto-generate kode terminal
-        $terminalCode = 'TM-' . strtoupper(Str::random(4)); // Contoh: TM-AB12
+        $terminalCode = 'TM-' . strtoupper(Str::random(8)); // Contoh: TM-ABCDE123
+
         // Cek apakah kode terminal atau kode merchant sudah aktif
         $existingTerminal = Terminal::where('terminal_code', $terminalCode)
             ->orWhere('merchant_id', $merchant->merchant_id)
@@ -183,7 +184,7 @@ class TerminalController extends Controller
         if ($existingTerminal) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Kode terminal atau kode merchant sudah aktif',
+                'message' => 'Merchant code is active',
             ], 400);
         }
 
@@ -207,88 +208,24 @@ class TerminalController extends Controller
 
     public function edit($id)
     {
-        // Retrieve the terminal with the specified ID, including the related merchant data
-        $terminal = Terminal::with('merchant')->find($id);
+        // Mencari terminal berdasarkan ID
+        $terminal = Terminal::find($id);
 
+        // Jika terminal tidak ditemukan, kembalikan respon error
         if (!$terminal) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Terminal not found'
+                'message' => 'terminal tidak ditemukan'
             ], 404);
         }
 
-        // Format the response data to include merchant_code from the related merchant model
+        // Mengembalikan data terminal untuk diedit
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'terminal_id' => $terminal->id,
-                'merchant_id' => $terminal->merchant_id,
-                'merchant_code' => $terminal->merchant->merchant_code, // Ensure merchant_code is included
-                'terminal_code' => $terminal->terminal_code,
-                'terminal_name' => $terminal->terminal_name,
-                'terminal_address' => $terminal->terminal_address,
-                'description' => $terminal->description,
-                'created_by' => $terminal->created_by,
-                'created_at' => $terminal->created_at,
-                'updated_at' => $terminal->updated_at,
-                'status' => $terminal->status,
-                // Add other fields as needed
-            ]
-        ]);
-
-
-        // // Mencari terminal berdasarkan ID
-        // $terminal = Terminal::find($id);
-
-        // // Jika terminal tidak ditemukan, kembalikan respon error
-        // if (!$terminal) {
-        //     return response()->json([
-        //         'status' => 'error',
-        //         'message' => 'terminal tidak ditemukan'
-        //     ], 404);
-        // }
-
-        // // Mengembalikan data terminal untuk diedit
-        // return response()->json([
-        //     'status' => 'success',
-        //     'message' => 'Data terminal berhasil ditemukan',
-        //     'data' => $terminal
-        // ], 200);
+            'message' => 'Data terminal berhasil ditemukan',
+            'data' => $terminal
+        ], 200);
     }
-
-    // public function edit($id)
-    // {
-    //     // Fetch the terminal data with merchant details based on ID
-    //     $terminal = DB::table('terminals')
-    //         ->leftJoin('merchants', 'terminals.merchant_id', '=', 'merchants.merchant_id')
-    //         ->where('terminals.terminal_id', $id)
-    //         ->select(
-    //             'terminals.*',
-    //             'merchants.merchant_code',
-    //             'terminals.terminal_id as terminal_id',
-    //             'terminals.terminal_code as terminal_kode',
-    //             'terminals.terminal_name as nama_terminal',
-    //             'terminals.terminal_address as alamat_terminal',
-    //             'terminals.description as deskripsi_terminal',
-    //             DB::raw('CASE WHEN terminals.is_active = TRUE THEN "Active" ELSE "Inactive" END as status_terminal')
-    //         )
-    //         ->first();
-
-    //     // If the terminal is not found, return an error response
-    //     if (!$terminal) {
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Terminal tidak ditemukan'
-    //         ], 404);
-    //     }
-
-    //     // Return the terminal data for editing
-    //     return response()->json([
-    //         'status' => 'success',
-    //         'message' => 'Data terminal berhasil ditemukan',
-    //         'data' => $terminal
-    //     ], 200);
-    // }
 
     /**
      * Mengupdate data terminal berdasarkan ID.
@@ -297,83 +234,48 @@ class TerminalController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
+    public function update(Request $request, $id)
+    {
+        // Validasi input dari pengguna
+        $request->validate([
+            'terminal_name' => 'required|string|max:100',
+            'terminal_address' => 'required|string',
+            'description' => 'nullable|string',
+        ]);
 
-public function update(Request $request, $id)
-{
-    $terminal = Terminal::find($id);
+        // Cari terminal berdasarkan ID
+        $terminal = Terminal::find($id);
 
-    if (!$terminal) {
+        if (!$terminal) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terminal tidak ditemukan',
+            ], 404);
+        }
+
+        // Menambahkan pengecekan agar kode terminal tidak dapat diubah
+        if ($request->input('terminal_code') && $request->input('terminal_code') !== $terminal->terminal_code) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Kode terminal tidak dapat diubah',
+            ], 400);
+        }
+
+        // Update data terminal
+        $terminal->terminal_name = $request->input('terminal_name');
+        $terminal->terminal_address = $request->input('terminal_address');
+        $terminal->description = $request->input('description');
+        $terminal->status = 'aktif'; // Set status menjadi aktif
+        $terminal->updated_by = Auth::check() ? Auth::id() : 1; // Set ID user yang mengedit
+        $terminal->updated_at = now();
+        $terminal->save();
+
         return response()->json([
-            'status' => 'error',
-            'message' => 'Terminal tidak ditemukan'
-        ], 404);
+            'status' => 'success',
+            'message' => 'Terminal berhasil diperbarui',
+            'data' => $terminal,
+        ], 200);
     }
-
-    // Validasi data yang diterima
-    $validated = $request->validate([
-        'terminal_name' => 'required|string',
-        'terminal_address' => 'required|string',
-        'description' => 'nullable|string',
-    ]);
-
-    // Update data terminal
-    $terminal->terminal_name = $validated['terminal_name'];
-    $terminal->terminal_address = $validated['terminal_address'];
-    $terminal->description = $validated['description'] ?? $terminal->description;
-    $terminal->save();
-
-    return response()->json([
-        'status' => 'success',
-        'message' => 'Terminal berhasil diupdate',
-        'data' => $terminal
-    ]);
-}
-
-    
-    // public function update(Request $request, $id)
-    // {
-    //     // Validasi input dari pengguna
-    //     $request->validate([
-    //         'merchant_code' => 'required|string|max:100|unique:merchants,merchant_code,' . $id . ',merchant_id',
-    //         'terminal_code' => 'required|string|max:100|unique:terminals,terminal_code,' . $id . ',terminal_id',
-    //         'terminal_name' => 'required|string|max:100',
-    //         'terminal_address' => 'required|string',
-    //         'description' => 'nullable|string',
-    //     ]);
-
-    //     // Cari terminal berdasarkan ID
-    //     $terminal = Terminal::find($id);
-
-    //     if (!$terminal) {
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Terminal tidak ditemukan',
-    //         ], 404);
-    //     }
-
-    //     // Menambahkan pengecekan agar kode terminal tidak dapat diubah
-    //     if ($request->input('terminal_code') && $request->input('terminal_code') !== $terminal->terminal_code) {
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Kode terminal tidak dapat diubah',
-    //         ], 400);
-    //     }
-
-    //     // Update data terminal
-    //     $terminal->terminal_name = $request->input('terminal_name');
-    //     $terminal->terminal_address = $request->input('terminal_address');
-    //     $terminal->description = $request->input('description');
-    //     $terminal->status = 'aktif'; // Set status menjadi aktif
-    //     $terminal->updated_by = Auth::check() ? Auth::id() : 1; // Set ID user yang mengedit
-    //     $terminal->updated_at = now();
-    //     $terminal->save();
-
-    //     return response()->json([
-    //         'status' => 'success',
-    //         'message' => 'Terminal berhasil diperbarui',
-    //         'data' => $terminal,
-    //     ], 200);
-    // }
 
     /**
      * Menghapus terminal berdasarkan ID.
@@ -381,7 +283,6 @@ public function update(Request $request, $id)
      * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
-
     public function destroy($id)
     {
         // Cari terminal berdasarkan ID
@@ -394,38 +295,16 @@ public function update(Request $request, $id)
             ], 404);
         }
 
-        // Hapus terminal secara permanen
-        $terminal->forceDelete();
+        // Hapus terminal dengan soft delete dan set status menjadi non-aktif
+        $terminal->deleted_by = Auth::check() ? Auth::id() : 1; // ID user yang menghapus
+        $terminal->deleted_at = now(); // Waktu penghapusan
+        $terminal->status = 'non-aktif'; // Set status menjadi non-aktif
+        $terminal->save();
+        $terminal->delete();
 
         return response()->json([
             'status' => 'success',
             'message' => 'Terminal berhasil dihapus',
         ], 200);
     }
-
-    
-    // public function destroy($id)
-    // {
-    //     // Cari terminal berdasarkan ID
-    //     $terminal = Terminal::find($id);
-
-    //     if (!$terminal) {
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Terminal tidak ditemukan',
-    //         ], 404);
-    //     }
-
-    //     // Hapus terminal dengan soft delete dan set status menjadi non-aktif
-    //     $terminal->deleted_by = Auth::check() ? Auth::id() : 1; // ID user yang menghapus
-    //     $terminal->deleted_at = now(); // Waktu penghapusan
-    //     $terminal->status = 'non-aktif'; // Set status menjadi non-aktif
-    //     $terminal->save();
-    //     $terminal->delete();
-
-    //     return response()->json([
-    //         'status' => 'success',
-    //         'message' => 'Terminal berhasil dihapus',
-    //     ], 200);
-    // }
 }

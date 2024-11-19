@@ -22,7 +22,7 @@ class QRISService
         $this->authorization = config('services.qris.authorization');
     }
 
-    public function generateQRIS(string $merchantId, string $terminalId, string $trxId, string $amount, string $expire)
+    public function generateQRIS(string $feCode, string $merchantId, string $terminalId, string $trxId, string $amount, string $expire)
     {
         $timestamp = now()->format('Y-m-d H:i:s');
         $body = [
@@ -31,7 +31,7 @@ class QRISService
             "trxId" => $trxId,
             "amount" => $amount,
             "expire" => $expire,
-            "posId" => "A01",
+            "posId" => $feCode,
             "timestamp" => $timestamp,
         ];
 

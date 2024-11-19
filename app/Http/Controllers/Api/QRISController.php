@@ -27,6 +27,7 @@ class QRISController extends Controller
         public function generate(Request $request)
         {
             $request->validate([
+                'feCode' => 'required|string',
                 'merchantId' => 'required|string',
                 'terminalId' => 'required|string',
                 'qty' => 'required|integer|min:1',
@@ -65,6 +66,7 @@ class QRISController extends Controller
                 ], 404);
             }
             
+            $feCode = $transactionData['feCode'];
             $merchantId = $merchant->merchant_code;
             $terminalId = $terminal->terminal_code;
             $qty = $transactionData['qty'];
@@ -106,7 +108,7 @@ class QRISController extends Controller
             // $trxId = uniqid();
             $amount = $transaction->total_amount;
 
-            $response = $this->qrisService->generateQRIS($merchantId, $terminalId, $trxId, $amount, $expire);
+            $response = $this->qrisService->generateQRIS($feCode, $merchantId, $terminalId, $trxId, $amount, $expire);
 
             if ($response['ack'] == '00') {
                 $data = json_decode(base64_decode($response['data']), true);

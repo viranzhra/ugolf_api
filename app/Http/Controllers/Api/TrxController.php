@@ -108,18 +108,19 @@ class TrxController extends Controller
         // Menghitung jumlah tiket terjual (transaksi yang berhasil)
         $ticketSold = $transactions->count();
 
-        // Perhitungan total quantity per bulan
-        $monthlyQuantities = DB::table('trx')
-            ->selectRaw('MONTH(trx_date) as month, SUM(qty) as total_quantity')
-            ->groupByRaw('MONTH(trx_date)')
-            ->orderByRaw('MONTH(trx_date)')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'month' => $item->month,
-                    'total_quantity' => $item->total_quantity,
-                ];
-            });
+// Perhitungan total quantity per bulan
+$monthlyQuantities = DB::table('trx')
+    ->selectRaw('EXTRACT(YEAR FROM trx_date) as year, EXTRACT(MONTH FROM trx_date) as month, SUM(qty) as total_quantity')
+    ->groupByRaw('EXTRACT(YEAR FROM trx_date), EXTRACT(MONTH FROM trx_date)')
+    ->orderByRaw('EXTRACT(YEAR FROM trx_date), EXTRACT(MONTH FROM trx_date)')
+    ->get()
+    ->map(function ($item) {
+        return [
+            'month' => (int) $item->month,  // Pastikan bulan berupa integer
+            'year' => (int) $item->year,    // Pastikan tahun berupa integer
+            'total_quantity' => (int) $item->total_quantity,
+        ];
+    });
 
         return response()->json([
             'status' => true,

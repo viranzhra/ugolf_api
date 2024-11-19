@@ -43,11 +43,10 @@ class FrontEndController extends Controller
             return response()->json([
                 'status' => false,
                 'code' => '02',
-                'message' => 'Invalid parameter',
+                'message' => 'Data Merchant or Terminal not found',
                 'data' => null 
             ], 200);
         }
-
 
         if ($query->is_active == true && $query->fe_code != $request->fe_code) {
             return response()->json([

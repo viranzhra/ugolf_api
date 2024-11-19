@@ -85,8 +85,8 @@ class TrxController extends Controller
         if ($search) {
             $baseQuery->where(function ($query) use ($search) {
                 $query->where('trx_code', 'LIKE', "%" . strtolower($search) . "%")
-                    ->orWhere('trx_reff', 'LIKE', "%" . strtolower($search) . "%")
-                    ->orWhere('paycode', 'LIKE', "%" . strtolower($search) . "%");
+                        ->orWhere('trx_reff', 'LIKE', "%" . strtolower($search) . "%")
+                        ->orWhere('paycode', 'LIKE', "%" . strtolower($search) . "%");
             });
         }
 
@@ -99,13 +99,38 @@ class TrxController extends Controller
         // Menghitung total transaksi tanpa filter (untuk recordsTotal)
         $recordsTotal = DB::table('trx')->count();
 
-        // Mengembalikan data dalam format JSON
+        // Menghitung jumlah total quantity dari semua transaksi
+        $totalQuantity = DB::table('trx')->sum('qty');
+
+        // Hitung total jumlah nominal transaksi
+        $totalAmount = $transactions->sum('total_amount');
+
+        // Menghitung jumlah tiket terjual (transaksi yang berhasil)
+        $ticketSold = $transactions->count();
+
+        // Perhitungan total quantity per bulan
+        $monthlyQuantities = DB::table('trx')
+            ->selectRaw('MONTH(trx_date) as month, SUM(qty) as total_quantity')
+            ->groupByRaw('MONTH(trx_date)')
+            ->orderByRaw('MONTH(trx_date)')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'month' => $item->month,
+                    'total_quantity' => $item->total_quantity,
+                ];
+            });
+
         return response()->json([
             'status' => true,
             'message' => 'Data transaksi berhasil diambil',
             'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
-            'data' => $transactions
+            'totalQuantity' => $totalQuantity, // Total quantity
+            'totalAmount' => $totalAmount,  // Total nominal
+            'ticketSold' => $ticketSold,
+            'data' => $transactions,
+            'monthlyQuantities' => $monthlyQuantities,
         ], 200);
     }
 

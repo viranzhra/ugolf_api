@@ -120,6 +120,7 @@ Route::get('/trx/{id}', [TrxController::class, 'show']); // Menampilkan daftar t
 Route::post('/trx', [TrxController::class, 'store']); // Menyimpan transaksi baru
 Route::put('/trx/{id}', [TrxController::class, 'update']); // Memperbarui transaksi berdasarkan ID
 Route::delete('/trx/{id}', [TrxController::class, 'destroy']); // Menghapus transaksi berdasarkan ID
+Route::get('/getWeeklyData', [TrxController::class, 'getWeeklyData']);
 // Route::get('/getDetail/{id}', [TrxController::class, 'show']);
 
 // PaymentType

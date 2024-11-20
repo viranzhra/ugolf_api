@@ -173,6 +173,58 @@ class TrxController extends Controller
         ]);
     }
 
+    public function getDailyCounts()
+    {
+        // Ambil jumlah transaksi unik berdasarkan trx_code setiap harinya
+        $dailyQuantities = DB::table('trx')
+            ->selectRaw('DATE(trx_date) as trx_date, COUNT(DISTINCT trx_code) as unique_transactions, SUM(total_amount) as total_amount')
+            ->groupByRaw('DATE(trx_date)')  // Mengelompokkan berdasarkan tanggal (tanpa waktu)
+            ->orderByRaw('DATE(trx_date)')   // Mengurutkan berdasarkan tanggal
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'trx_date' => $item->trx_date,  // Tanggal transaksi
+                    'unique_transactions' => (int) $item->unique_transactions,  // Jumlah transaksi unik per tanggal
+                    'total_amount' => (float) $item->total_amount,    // Total nominal per tanggal
+                ];
+            });
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Data jumlah transaksi per hari berhasil diambil',
+            'data' => $dailyQuantities,
+        ], 200);
+    }
+
+    public function getSalesData()
+    {
+        // Ambil total penjualan minggu ini
+        $salesThisWeek = DB::table('trx')
+            ->whereBetween('trx_date', [now()->startOfWeek(), now()->endOfWeek()])
+            ->sum('total_amount');
+
+        // Ambil persentase perubahan dibandingkan minggu lalu
+        $salesLastWeek = DB::table('trx')
+            ->whereBetween('trx_date', [now()->subWeek()->startOfWeek(), now()->subWeek()->endOfWeek()])
+            ->sum('total_amount');
+
+        $percentageChange = $salesLastWeek > 0 ? (($salesThisWeek - $salesLastWeek) / $salesLastWeek) * 100 : 0;
+
+        // Mengambil data transaksi mingguan (bisa ditambahkan lebih banyak data jika diperlukan)
+        return response()->json([
+            'status' => true,
+            'message' => 'Data penjualan berhasil diambil',
+            'data' => [
+                'sales_this_week' => number_format($salesThisWeek, 2),  // Format untuk uang
+                'sales_last_week' => number_format($salesLastWeek, 2),
+                'percentage_change' => number_format($percentageChange, 2), // Format persentase
+                'transactions_count' => DB::table('trx')
+                    ->whereBetween('trx_date', [now()->startOfWeek(), now()->endOfWeek()])
+                    ->count('trx_code'), // Jumlah transaksi minggu ini
+            ],
+        ], 200);
+    }
+
     // Menyimpan transaksi baru
     public function store(Request $request)
     {

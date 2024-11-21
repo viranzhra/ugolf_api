@@ -32,6 +32,9 @@ class ProfileController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        $oldName = $user->name;
+        $oldEmail = $user->email;
+
         $user->name = $request->name;
         $user->email = $request->email;
 
@@ -42,9 +45,17 @@ class ProfileController extends Controller
         $user->save();
 
         return response()->json([
+            'success' => true,
             'message' => 'Profil berhasil diperbarui',
-            'user' => $user,
-        ]);
+            'user_old' => [
+                'name' => $oldName,
+                'email' => $oldEmail,
+            ],
+            'user' => [
+                'name' => $user->name,
+                'email' => $user->email,
+            ],
+        ]);    
     }
 
     public function updatePhoto(Request $request)

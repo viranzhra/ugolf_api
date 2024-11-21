@@ -99,13 +99,129 @@ class TrxController extends Controller
         // Menghitung total transaksi tanpa filter (untuk recordsTotal)
         $recordsTotal = DB::table('trx')->count();
 
-        // Mengembalikan data dalam format JSON
+        // Menghitung jumlah total quantity dari semua transaksi
+        $totalQuantity = DB::table('trx')->sum('qty');
+
+        // Hitung total jumlah nominal transaksi
+        $totalAmount = $transactions->sum('total_amount');
+
+        // Menghitung jumlah tiket terjual (transaksi yang berhasil)
+        $ticketSold = $transactions->count();
+
+        // Perhitungan total quantity per bulan
+        $monthlyQuantities = DB::table('trx')
+            ->selectRaw('EXTRACT(YEAR FROM trx_date) as year, EXTRACT(MONTH FROM trx_date) as month, SUM(qty) as total_quantity')
+            ->groupByRaw('EXTRACT(YEAR FROM trx_date), EXTRACT(MONTH FROM trx_date)')
+            ->orderByRaw('EXTRACT(YEAR FROM trx_date), EXTRACT(MONTH FROM trx_date)')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'month' => (int) $item->month,  // Pastikan bulan berupa integer
+                    'year' => (int) $item->year,    // Pastikan tahun berupa integer
+                    'total_quantity' => (int) $item->total_quantity,
+                ];
+            });
+
         return response()->json([
             'status' => true,
             'message' => 'Data transaksi berhasil diambil',
             'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
-            'data' => $transactions
+            'totalQuantity' => $totalQuantity, // Total quantity
+            'totalAmount' => $totalAmount,  // Total nominal
+            'ticketSold' => $ticketSold,
+            'data' => $transactions,
+            'monthlyQuantities' => $monthlyQuantities,
+        ], 200);
+    }
+
+    public function getWeeklyData(Request $request)
+    {
+        // Mengambil transaksi berdasarkan status pembayaran 'P' dan 'S'
+        $transactions = Trx::whereIn('payment_status', ['P', 'S'])
+            ->selectRaw("
+        TO_CHAR(created_at, 'Day') as day,
+        payment_status,
+        SUM(qty) as total_quantity
+    ")
+            ->groupByRaw("TO_CHAR(created_at, 'Day'), payment_status")
+            ->orderByRaw("MIN(created_at)") // Urutkan sesuai urutan hari
+            ->get();
+
+        // Menyusun data per hari
+        $dailyData = [
+            'days' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+            'data' => [
+                'S' => array_fill(0, 7, 0), // Untuk payment_status 'S'
+                'P' => array_fill(0, 7, 0)  // Untuk payment_status 'P'
+            ],
+        ];
+
+        foreach ($transactions as $transaction) {
+            // Cocokkan hari untuk memasukkan data ke dalam array
+            $dayIndex = array_search(trim($transaction->day), array_map('ucfirst', $dailyData['days']));
+            if ($dayIndex !== false) {
+                $dailyData['data'][$transaction->payment_status][$dayIndex] = (int) $transaction->total_quantity;
+            }
+        }
+
+        // Kembalikan response JSON
+        return response()->json([
+            'status' => true,
+            'message' => 'Data harian berhasil diambil',
+            'data' => $dailyData,
+        ]);
+    }
+
+    public function getDailyCounts()
+    {
+        // Ambil jumlah transaksi unik berdasarkan trx_code setiap harinya
+        $dailyQuantities = DB::table('trx')
+            ->selectRaw('DATE(trx_date) as trx_date, COUNT(DISTINCT trx_code) as unique_transactions, SUM(total_amount) as total_amount')
+            ->groupByRaw('DATE(trx_date)')  // Mengelompokkan berdasarkan tanggal (tanpa waktu)
+            ->orderByRaw('DATE(trx_date)')   // Mengurutkan berdasarkan tanggal
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'trx_date' => $item->trx_date,  // Tanggal transaksi
+                    'unique_transactions' => (int) $item->unique_transactions,  // Jumlah transaksi unik per tanggal
+                    'total_amount' => (float) $item->total_amount,    // Total nominal per tanggal
+                ];
+            });
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Data jumlah transaksi per hari berhasil diambil',
+            'data' => $dailyQuantities,
+        ], 200);
+    }
+
+    public function getSalesData()
+    {
+        // Ambil total penjualan minggu ini
+        $salesThisWeek = DB::table('trx')
+            ->whereBetween('trx_date', [now()->startOfWeek(), now()->endOfWeek()])
+            ->sum('total_amount');
+
+        // Ambil persentase perubahan dibandingkan minggu lalu
+        $salesLastWeek = DB::table('trx')
+            ->whereBetween('trx_date', [now()->subWeek()->startOfWeek(), now()->subWeek()->endOfWeek()])
+            ->sum('total_amount');
+
+        $percentageChange = $salesLastWeek > 0 ? (($salesThisWeek - $salesLastWeek) / $salesLastWeek) * 100 : 0;
+
+        // Mengambil data transaksi mingguan (bisa ditambahkan lebih banyak data jika diperlukan)
+        return response()->json([
+            'status' => true,
+            'message' => 'Data penjualan berhasil diambil',
+            'data' => [
+                'sales_this_week' => number_format($salesThisWeek, 2),  // Format untuk uang
+                'sales_last_week' => number_format($salesLastWeek, 2),
+                'percentage_change' => number_format($percentageChange, 2), // Format persentase
+                'transactions_count' => DB::table('trx')
+                    ->whereBetween('trx_date', [now()->startOfWeek(), now()->endOfWeek()])
+                    ->count('trx_code'), // Jumlah transaksi minggu ini
+            ],
         ], 200);
     }
 

@@ -47,13 +47,11 @@ class ProfileController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Profil berhasil diperbarui',
-            'user_old' => [
-                'name' => $oldName,
-                'email' => $oldEmail,
-            ],
             'user' => [
                 'name' => $user->name,
+                'old_name' => $oldName,
                 'email' => $user->email,
+                'old_email' => $oldEmail,
             ],
         ]);    
     }

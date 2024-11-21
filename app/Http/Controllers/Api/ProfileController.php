@@ -20,7 +20,6 @@ class ProfileController extends Controller
         $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
 
         if ($request->filled('password')) {
@@ -38,18 +37,6 @@ class ProfileController extends Controller
 
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
-        }
-
-        if ($request->hasFile('photo')) {
-            // Menghapus foto lama
-            if ($user->photo && file_exists(public_path('assets/photo_profile/' . $user->photo))) {
-                unlink(public_path('assets/photo_profile/' . $user->photo));
-            }
-
-            $file = $request->file('photo');
-            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('assets/photo_profile'), $filename);
-            $user->photo = $filename;
         }
 
         $user->save();

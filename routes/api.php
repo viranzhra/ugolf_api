@@ -151,3 +151,7 @@ Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.upda
 Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
 Route::get('/roles/assign', [RoleController::class, 'indexAssignRole']);
 Route::put('/roles/assign/{user}', [RoleController::class, 'assignRole'])->name('roles.assign');
+
+/* User Management */
+Route::put('/user/update', [ProfileController::class, 'update']);
+Route::post('/user/update-photo', [ProfileController::class, 'updatePhoto']);

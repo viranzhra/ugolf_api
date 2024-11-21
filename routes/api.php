@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\ConfigController;
 use App\Http\Controllers\Api\PaymentTypeController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AuthJWTController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\FrontEndController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\QRISController;

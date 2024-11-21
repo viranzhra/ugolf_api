@@ -154,5 +154,7 @@ Route::get('/roles/assign', [RoleController::class, 'indexAssignRole']);
 Route::put('/roles/assign/{user}', [RoleController::class, 'assignRole'])->name('roles.assign');
 
 /* User Management */
-Route::put('/user/update', [ProfileController::class, 'update']);
-Route::post('/user/update-photo', [ProfileController::class, 'updatePhoto']);
+Route::group(['middleware' => ['jwt.verify']], function () {
+    Route::put('/user/update', [ProfileController::class, 'update']);
+    Route::post('/user/update-photo', [ProfileController::class, 'updatePhoto']);
+});

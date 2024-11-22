@@ -60,11 +60,11 @@ class AuthJWTController extends Controller
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
-            // 'photo' => $user->photo,
+            'photo' => $user->photo,
             'roles' => $user->roles->pluck('name')->first(),
             'permissions' => $user->roles->flatMap(function ($role) {
                 return $role->permissions->pluck('name');
-            })->unique(), // Nama permissions
+            })->unique(),
         ]);
     }
 

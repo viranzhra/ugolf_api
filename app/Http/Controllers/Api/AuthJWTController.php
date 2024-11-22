@@ -64,7 +64,7 @@ class AuthJWTController extends Controller
             'roles' => $user->roles->pluck('name')->first(),
             'permissions' => $user->roles->flatMap(function ($role) {
                 return $role->permissions->pluck('name');
-            })->unique(), // Nama permissions
+            })->unique(),
         ]);
     }
 

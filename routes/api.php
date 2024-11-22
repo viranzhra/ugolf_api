@@ -157,4 +157,5 @@ Route::put('/roles/assign/{user}', [RoleController::class, 'assignRole'])->name(
 Route::group(['middleware' => ['jwt.verify']], function () {
     Route::put('/user/update', [ProfileController::class, 'update']);
     Route::post('/user/update-photo', [ProfileController::class, 'updatePhoto']);
+    Route::delete('/delete/profile/photo', [ProfileController::class, 'deletePhoto']);
 });

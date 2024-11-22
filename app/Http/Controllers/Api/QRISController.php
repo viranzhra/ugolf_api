@@ -143,7 +143,7 @@ class QRISController extends Controller
         $trx = Trx::where('trx_code', $request->trxId)
             ->join('terminals', 'trx.terminal_id', '=', 'terminals.terminal_id')
             ->join('merchants', 'terminals.merchant_id', '=', 'merchants.merchant_id')
-            ->select('trx.*', 'terminals.terminal_code', 'merchants.merchant_code')
+            ->select('trx.*', 'terminals.fe_code', 'terminals.terminal_code', 'merchants.merchant_code')
             ->first();
 
         if (!$trx) {
@@ -160,6 +160,7 @@ class QRISController extends Controller
             ], 200);
         }
 
+        $feCode = (string) $trx->fe_code;  
         $merchantId = $trx->merchant_code;
         $terminalId = $trx->terminal_code;
 
@@ -167,7 +168,7 @@ class QRISController extends Controller
         $reffNumber = $request->input('reffNumber');
         $amount = $request->input('amount');
 
-        $response = $this->qrisService->checkTransactionStatus($merchantId, $terminalId, $trxId, $reffNumber, $amount);
+        $response = $this->qrisService->checkTransactionStatus($feCode, $merchantId, $terminalId, $trxId, $reffNumber, $amount);
 
         // Jika pembayaran berhasil
         if ($response['ack'] == '00') {

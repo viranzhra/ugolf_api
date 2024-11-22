@@ -59,7 +59,7 @@ class QRISService
         // dd($response->json());    
     }
 
-    public function checkTransactionStatus(string $merchantId, string $terminalId, string $trxid, string $reffNumber, string $amount)
+    public function checkTransactionStatus(string $feCode, string $merchantId, string $terminalId, string $trxid, string $reffNumber, string $amount)
     {
         $timestamp = now()->format('Y-m-d H:i:s');
 
@@ -73,7 +73,7 @@ class QRISService
             "merchantId" => $merchantId,
             "terminalId" => $terminalId,
             "amount" => $amount,
-            "posId" => "A01",
+            "posId" => $feCode,
             "timestamp" => $timestamp,
         ];
 

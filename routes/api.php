@@ -159,4 +159,5 @@ Route::group(['middleware' => ['jwt.verify']], function () {
 Route::group(['middleware' => ['jwt.verify']], function () {
     Route::put('/user/update', [ProfileController::class, 'update']);
     Route::post('/user/update-photo', [ProfileController::class, 'updatePhoto']);
+    Route::delete('/delete/profile/photo', [ProfileController::class, 'deletePhoto']);
 });

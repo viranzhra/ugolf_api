@@ -143,15 +143,17 @@ Route::post('/qris/check-status', [QRISController::class, 'checkStatus'])->name(
 Route::post('/qris/generate', [QRISController::class, 'generate'])->name('qris.generate');
 Route::post('/qris/check-status', [QRISController::class, 'checkStatus'])->name('qris.check_status');
 
-// Role Management
-Route::get('/roles', [RoleController::class, 'index']);
-Route::get('/roles/create', [RoleController::class, 'create']);
-Route::post('/roles', [RoleController::class, 'store']);
-Route::get('/roles/{id}/edit', [RoleController::class, 'edit']);
-Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
-Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
-Route::get('/roles/assign', [RoleController::class, 'indexAssignRole']);
-Route::put('/roles/assign/{user}', [RoleController::class, 'assignRole'])->name('roles.assign');
+Route::group(['middleware' => ['jwt.verify']], function () {
+    // Role Management
+    Route::get('/roles', [RoleController::class, 'index']);
+    Route::get('/roles/create', [RoleController::class, 'create']);
+    Route::post('/roles', [RoleController::class, 'store']);
+    Route::get('/roles/{id}/edit', [RoleController::class, 'edit']);
+    Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
+    Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
+    Route::get('/roles/assign', [RoleController::class, 'indexAssignRole']);
+    Route::put('/roles/assign/{user}', [RoleController::class, 'assignRole'])->name('roles.assign');
+});
 
 /* User Management */
 Route::group(['middleware' => ['jwt.verify']], function () {

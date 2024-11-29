@@ -66,6 +66,7 @@ class RoleController extends Controller
 
     public function create()
     {
+        $roles = Role::all();
         $permissions = Permission::all();
 
         // Mengelompokkan permissions berdasarkan modul
@@ -74,6 +75,7 @@ class RoleController extends Controller
         });
 
         return response()->json([
+            'roles' => $roles,
             'permissions' => $groupedPermissions,
         ]);
     }
@@ -115,7 +117,7 @@ class RoleController extends Controller
         $role->update(['name' => $request->name]);
         $role->syncPermissions($request->permissions);
 
-        return response()->json(['message' => 'Role updated successfully', 'role' => $role]);
+        return response()->json(['status' => 'success', 'message' => 'Role updated successfully', 'role' => $role]);    
     }
 
     public function destroy(Role $role)
@@ -126,6 +128,30 @@ class RoleController extends Controller
         return response()->json(['message' => 'Role deleted successfully']);
     }
 
+    public function storeUser(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'role' => 'required|string|exists:roles,name',
+        ]);
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => bcrypt($validated['password']),
+        ]);
+
+        $user->syncRoles([$validated['role']]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User created successfully',
+            'user' => $user->load('roles'),
+        ], 201);
+    }
+    
     public function assignRole(Request $request, User $user)
     {
         $request->validate([
@@ -133,10 +159,21 @@ class RoleController extends Controller
             'roles.*' => 'exists:roles,name',
         ]);
 
-        // Update roles pengguna
         $user->syncRoles($request->roles);
 
-        return response()->json(['message' => 'User roles updated successfully', 'user' => $user->load('roles')]);
+        return response()->json(['status' => 'success', 'message' => 'User roles updated successfully', 'user' => $user->load('roles')], 200);    
+    }
+
+    public function userDestroy($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $user->delete(); // Menghapus user berdasarkan ID
+        return response()->json(['message' => 'User deleted successfully']);
     }
 
 }

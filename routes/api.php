@@ -143,7 +143,7 @@ Route::post('/qris/check-status', [QRISController::class, 'checkStatus'])->name(
 Route::post('/qris/generate', [QRISController::class, 'generate'])->name('qris.generate');
 Route::post('/qris/check-status', [QRISController::class, 'checkStatus'])->name('qris.check_status');
 
-Route::group(['middleware' => ['jwt.verify']], function () {
+// Route::group(['middleware' => ['jwt.verify']], function () {
     // Role Management
     Route::get('/roles', [RoleController::class, 'index']);
     Route::get('/roles/create', [RoleController::class, 'create']);
@@ -153,7 +153,9 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
     Route::get('/roles/assign', [RoleController::class, 'indexAssignRole']);
     Route::put('/roles/assign/{user}', [RoleController::class, 'assignRole'])->name('roles.assign');
-});
+    Route::delete('/roles/assign/{user}', [RoleController::class, 'userDestroy'])->name('roles.assign.destroy');
+    Route::post('/roles/user', [RoleController::class, 'storeUser']);
+// });
 
 /* User Management */
 Route::group(['middleware' => ['jwt.verify']], function () {

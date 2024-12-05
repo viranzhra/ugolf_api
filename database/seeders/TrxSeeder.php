@@ -32,8 +32,8 @@ class TrxSeeder extends Seeder
             return;
         }
 
-        // Seed 100 transactions for testing
-        foreach (range(1, 100) as $index) {
+        // Seed 30 transactions for testing
+        foreach (range(1, 30) as $index) {
             $amount = $faker->numberBetween(10000, 500000); // Harga per transaksi
             $qty = $faker->numberBetween(1, 5); // Jumlah transaksi yang dilakukan
             $totalAmount = $amount * $qty;
@@ -48,7 +48,8 @@ class TrxSeeder extends Seeder
                 'total_amount' => $totalAmount, // Total harga (amount * qty)
                 'paycode' => $faker->uuid, // Kode pembayaran (UUID sebagai placeholder)
                 'expire' => $faker->dateTimeBetween('now', '+1 hour')->format('Y-m-d H:i:s'), // Waktu expire QR
-                'trx_date' => Carbon::now()->format('Y-m-d H:i:s'), // Tanggal transaksi
+                // 'trx_date' => Carbon::now()->format('Y-m-d H:i:s'), // Tanggal transaksi
+                'trx_date' => $faker->dateTimeBetween('-30 days', 'now')->format('Y-m-d H:i:s'), // Tanggal transaksi acak dalam 30 hari terakhir
                 'payment_date' => $faker->dateTimeBetween('-1 day', 'now')->format('Y-m-d H:i:s'), // Tanggal pembayaran
                 'payment_name' => $faker->name, // Nama Pembayar
                 'payment_phone' => $faker->phoneNumber, // Nomor Telepon Pembayar

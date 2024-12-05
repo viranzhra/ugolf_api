@@ -118,7 +118,7 @@ class PaymentTypeController extends Controller
     {
         // Validasi input
         $request->validate([
-            'payment_type_code' => 'required|unique:payment_types,payment_type_code,' . $id,
+            'payment_type_code' => 'required|unique:payment_types,payment_type_code,' . $id . ',payment_type_id',
             'payment_type_name' => 'required',
             'description' => 'nullable',
         ]);
